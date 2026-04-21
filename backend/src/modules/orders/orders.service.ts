@@ -2,7 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { OrderStatus, PaymentMethod } from '@prisma/client';
+import { UpdatePaymentStatusDto } from './dto/update-payment-status.dto';
+import { OrderStatus, PaymentMethod, PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class OrdersService {
@@ -195,6 +196,42 @@ export class OrdersService {
         address: true,
         payment: true,
       },
+    });
+  }
+
+  async getPayment(userId: bigint, orderId: bigint) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: { payment: true },
+    });
+
+    if (!order || order.userId !== userId) {
+      throw new NotFoundException('Order not found');
+    }
+    if (!order.payment) {
+      throw new NotFoundException('Payment not found for this order');
+    }
+    return order.payment;
+  }
+
+  async updatePaymentStatus(paymentId: bigint, dto: UpdatePaymentStatusDto) {
+    const payment = await this.prisma.payment.findUnique({ where: { id: paymentId } });
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+
+    const data: any = { status: dto.status };
+    if (dto.transactionId) data.transactionId = dto.transactionId;
+    if (dto.provider) data.provider = dto.provider;
+
+    // Ghi nhận thời điểm thanh toán khi chuyển sang PAID
+    if (dto.status === PaymentStatus.PAID) {
+      data.paidAt = new Date();
+    }
+
+    return this.prisma.payment.update({
+      where: { id: paymentId },
+      data,
     });
   }
 }
