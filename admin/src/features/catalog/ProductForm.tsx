@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2, Save, UploadCloud, AlertCircle } from "lucide-react";
 import api from "@/lib/api";
 
@@ -7,8 +7,10 @@ type Option = { id: string; name: string; slug: string };
 
 export function ProductForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
   const [skus, setSkus] = React.useState([
-    { id: 1, skuCode: "", color: "", colorHex: "#000000", size: "", price: "", salePrice: "", stock: 0 }
+    { id: Number(1), isExisting: false, skuCode: "", color: "", colorHex: "#000000", size: "", price: "", salePrice: "", stock: 0 }
   ]);
   
   // Data State
@@ -37,24 +39,55 @@ export function ProductForm() {
   };
 
   React.useEffect(() => {
-    const fetchOptions = async () => {
+    const fetchOptionsAndData = async () => {
       try {
+        setLoading(true);
         const [cats, brds] = await Promise.all([
           api.get('/admin/categories'),
           api.get('/admin/brands')
         ]);
         setCategories(cats.data);
         setBrands(brds.data);
+
+        if (isEditMode) {
+          const prodRes = await api.get(`/admin/products/${id}`);
+          const prod = prodRes.data;
+          setName(prod.name || "");
+          setCategoryId(prod.categoryId ? prod.categoryId.toString() : "");
+          setBrandId(prod.brandId ? prod.brandId.toString() : "");
+          setMaterial(prod.material || "");
+          setDescription(prod.description || "");
+          setGender(prod.gender || "UNISEX");
+          setIsActive(prod.isActive ?? true);
+          setThumbnail(prod.thumbnail || "");
+          
+          if (prod.skus && prod.skus.length > 0) {
+             setSkus(prod.skus.map((s: any) => ({
+               id: s.id,
+               isExisting: true,
+               skuCode: s.skuCode,
+               color: s.color?.name || "",
+               colorHex: s.color?.hexCode || "#000000",
+               size: s.size?.name || "",
+               price: s.price?.toString() || "",
+               salePrice: s.salePrice?.toString() || "",
+               stock: s.stock || 0
+             })));
+          }
+        }
       } catch (e) {
-        console.error("Failed to fetch options", e);
+        console.error("Failed to fetch initial data", e);
+        showToast("Error", "Failed to load product details.", "error");
+      } finally {
+        setLoading(false);
       }
     };
-    fetchOptions();
-  }, []);
+    fetchOptionsAndData();
+  }, [id, isEditMode]);
 
   const addSku = () => {
-    const newId = skus.length > 0 ? Math.max(...skus.map(s => s.id)) + 1 : 1;
-    setSkus([...skus, { id: newId, skuCode: "", color: "", colorHex: "#000000", size: "", price: "", salePrice: "", stock: 0 }]);
+    const newId = skus.length > 0 ? Math.max(...skus.map(s => Number(s.id) || 0)) + 1 : 1;
+    setSkus([...skus, { id: newId, isExisting: false, skuCode: "", color: "", colorHex: "#000000", size: "", price: "", salePrice: "", stock: 0 }]);
   };
 
   const removeSku = (id: number) => {
@@ -129,13 +162,26 @@ export function ProductForm() {
         gender,
         isActive,
         thumbnail,
-        skus: skus
+        skus: skus.map(s => ({
+          ...(isEditMode && s.isExisting && s.id ? { id: s.id.toString() } : {}),
+          skuCode: s.skuCode,
+          color: s.color,
+          colorHex: s.colorHex,
+          size: s.size,
+          price: s.price,
+          salePrice: s.salePrice,
+          stock: s.stock
+        }))
       };
-      
-      await api.post('/admin/products', payload);
+      if (isEditMode) {
+        await api.patch(`/admin/products/${id}`, payload);
+        showToast("Success", "Product updated successfully.", "success");
+      } else {
+        await api.post('/admin/products', payload);
+      }
       navigate('/products');
     } catch (e) {
-      console.error("Failed to create product", e);
+      console.error("Failed to commit product", e);
       showToast("Commit Failed", "Server rejected the payload. Check console.", "error");
     } finally {
       setLoading(false);
@@ -167,7 +213,7 @@ export function ProductForm() {
             >
               <ArrowLeft size={16} /> Back to Catalog
             </button>
-            <h1 className="text-4xl font-black tracking-tighter uppercase whitespace-nowrap">New Product_</h1>
+            <h1 className="text-4xl font-black tracking-tighter uppercase whitespace-nowrap">{isEditMode ? 'Edit Product_' : 'New Product_'}</h1>
             <p className="text-sm font-bold tracking-widest text-zinc-500 uppercase mt-2">
               Configure Item & Telemetry
             </p>
@@ -303,16 +349,16 @@ export function ProductForm() {
                         <label className="text-[8px] font-black tracking-widest text-zinc-400 uppercase">Tracking SKU Code *</label>
                         {errors[`sku_${index}_skuCode`] && <span className="text-[8px] font-bold text-red-500 uppercase tracking-widest">{errors[`sku_${index}_skuCode`]}</span>}
                       </div>
-                      <input type="text" value={sku.skuCode} onChange={e => {updateSku(sku.id, 'skuCode', e.target.value); setErrors(prev => ({...prev, [`sku_${index}_skuCode`]: ''})) }} placeholder="PRD-00..." className="w-full border-none px-0 py-1 text-sm font-bold uppercase focus:outline-none bg-transparent" />
+                      <input type="text" value={sku.skuCode} disabled={sku.isExisting} onChange={e => {updateSku(sku.id, 'skuCode', e.target.value); setErrors(prev => ({...prev, [`sku_${index}_skuCode`]: ''})) }} placeholder="PRD-00..." className="w-full border-none px-0 py-1 text-sm font-bold uppercase focus:outline-none bg-transparent disabled:opacity-50 disabled:cursor-not-allowed" />
                     </div>
 
                     <div className="col-span-6 md:col-span-2 flex flex-col gap-1">
                       <label className="text-[8px] font-black tracking-widest text-zinc-400 uppercase">Color</label>
-                      <input type="text" value={sku.color} onChange={e => updateSku(sku.id, 'color', e.target.value)} placeholder="Name" className="w-full border border-zinc-300 px-2 py-2 text-xs font-bold uppercase focus:outline-none focus:border-zinc-950 bg-transparent" />
+                      <input type="text" value={sku.color} disabled={sku.isExisting} onChange={e => updateSku(sku.id, 'color', e.target.value)} placeholder="Name" className="w-full border border-zinc-300 px-2 py-2 text-xs font-bold uppercase focus:outline-none focus:border-zinc-950 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-100" />
                     </div>
                     <div className="col-span-6 md:col-span-1 flex flex-col gap-1">
                       <label className="text-[8px] font-black tracking-widest text-zinc-400 uppercase">Size</label>
-                      <input type="text" value={sku.size} onChange={e => updateSku(sku.id, 'size', e.target.value)} placeholder="S/M/L" className="w-full border border-zinc-300 px-2 py-2 text-xs font-bold uppercase focus:outline-none focus:border-zinc-950 bg-transparent text-center" />
+                      <input type="text" value={sku.size} disabled={sku.isExisting} onChange={e => updateSku(sku.id, 'size', e.target.value)} placeholder="S/M/L" className="w-full border border-zinc-300 px-2 py-2 text-xs font-bold uppercase focus:outline-none focus:border-zinc-950 bg-transparent text-center disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-100" />
                     </div>
                     <div className="col-span-12 md:col-span-3 flex flex-col gap-1">
                       <div className="flex justify-between items-center">
