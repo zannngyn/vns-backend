@@ -17,12 +17,22 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
+      console.log("Attempting login with:", email);
       const response = await api.post("/auth/login", { email, password });
+      console.log("Login successful, tokens received");
+      
       localStorage.setItem("access_token", response.data.accessToken);
       localStorage.setItem("refresh_token", response.data.refreshToken);
+      console.log("Tokens stored in localStorage. Navigating to / ...");
+      
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid authentication credentials.");
+      console.error("Login Error:", err);
+      if (!err.response) {
+        setError("Network Error: Cannot connect to backend server. Make sure the backend is running on port 3000.");
+      } else {
+        setError(err.response?.data?.message || "Invalid authentication credentials.");
+      }
     } finally {
       setLoading(false);
     }
