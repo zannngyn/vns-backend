@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from '@/features/auth/Login';
 import DashboardLayout from '@/components/common/DashboardLayout';
 import { DashboardOverview } from '@/features/dashboard/DashboardOverview';
+import { ProductList } from '@/features/catalog/ProductList';
+import { ProductForm } from '@/features/catalog/ProductForm';
+import { OrderList } from '@/features/sales/OrderList';
+import { UserList } from '@/features/users/UserList'; 
 
 // Protected Route wrapper component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -29,7 +33,10 @@ export function AppRoutes() {
           } 
         >
           <Route index element={<DashboardOverview />} />
-          {/* We will add /products, /orders routes here later */}
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/new" element={<ProductForm />} />
+          <Route path="orders" element={<OrderList />} />
+          <Route path="users" element={<UserList />} />
         </Route>
       </Routes>
     </BrowserRouter>
