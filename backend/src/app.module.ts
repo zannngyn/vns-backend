@@ -10,6 +10,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RedisModule } from './common/redis/redis.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
+import { ProductsModule } from './modules/products/products.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { RolesGuard } from './modules/auth/guards/roles.guard';
     UsersModule,
     AuthModule,
     RedisModule,
+    ProductsModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [
@@ -36,4 +40,4 @@ import { RolesGuard } from './modules/auth/guards/roles.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
