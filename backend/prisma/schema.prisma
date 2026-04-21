@@ -1,5 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ============================================
+// VIESTYLE E-Commerce — Prisma Schema
+// ============================================
 
 generator client {
   provider        = "prisma-client-js"
@@ -9,4 +10,430 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNISEX
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPING
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum PaymentMethod {
+  COD
+  VNPAY
+  MOMO
+  BANK_TRANSFER
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+}
+
+// ============================================
+// USER GROUP
+// ============================================
+
+model User {
+  id            BigInt    @id @default(autoincrement())
+  email         String    @unique @db.VarChar(100)
+  passwordHash  String    @map("password_hash")
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  profile       UserProfile?
+  addresses     Address[]
+  cart          Cart?
+  orders        Order[]
+  reviews       Review[]
+  preferences   UserPreference?
+  chatSessions  ChatSession[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id          BigInt    @id @default(autoincrement())
+  userId      BigInt    @unique @map("user_id")
+  fullName    String?   @map("full_name") @db.VarChar(100)
+  phone       String?   @db.VarChar(20)
+  avatar      String?
+  gender      Gender?
+  dateOfBirth DateTime? @map("date_of_birth") @db.Date
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Address {
+  id            BigInt    @id @default(autoincrement())
+  userId        BigInt    @map("user_id")
+  receiverName  String    @map("receiver_name") @db.VarChar(100)
+  phone         String    @db.VarChar(20)
+  addressLine   String    @map("address_line")
+  ward          String?   @db.VarChar(100)
+  district      String?   @db.VarChar(100)
+  city          String    @db.VarChar(100)
+  isDefault     Boolean   @default(false) @map("is_default")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
+
+  @@map("addresses")
+}
+
+model UserPreference {
+  id              BigInt    @id @default(autoincrement())
+  userId          BigInt    @unique @map("user_id")
+  favoriteColors  String[]  @map("favorite_colors")
+  favoriteStyles  String[]  @map("favorite_styles")
+  fitPreference   String?   @map("fit_preference") @db.VarChar(50)
+  budgetMin       Decimal?  @map("budget_min") @db.Decimal(12, 2)
+  budgetMax       Decimal?  @map("budget_max") @db.Decimal(12, 2)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+// ============================================
+// CATALOG GROUP
+// ============================================
+
+model Category {
+  id        BigInt    @id @default(autoincrement())
+  name      String    @unique @db.VarChar(100)
+  slug      String    @unique @db.VarChar(120)
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Brand {
+  id        BigInt    @id @default(autoincrement())
+  name      String    @unique @db.VarChar(100)
+  slug      String    @unique @db.VarChar(120)
+  logo      String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  products  Product[]
+
+  @@map("brands")
+}
+
+model Product {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  slug        String    @unique @db.VarChar(280)
+  description String?   @db.Text
+  material    String?   @db.VarChar(100)
+  gender      Gender    @default(UNISEX)
+  thumbnail   String?
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Foreign keys
+  categoryId  BigInt    @map("category_id")
+  brandId     BigInt    @map("brand_id")
+
+  // Relations
+  category    Category  @relation(fields: [categoryId], references: [id])
+  brand       Brand     @relation(fields: [brandId], references: [id])
+  skus        ProductSku[]
+  reviews     Review[]
+  styleTags   ProductStyleTag[]
+  embedding   ProductEmbedding?
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@map("products")
+}
+
+model Color {
+  id        BigInt    @id @default(autoincrement())
+  name      String    @unique @db.VarChar(50)
+  hexCode   String    @map("hex_code") @db.VarChar(10)
+  tone      String?   @db.VarChar(50)
+
+  // Relations
+  skus      ProductSku[]
+
+  @@map("colors")
+}
+
+model Size {
+  id        BigInt    @id @default(autoincrement())
+  name      String    @unique @db.VarChar(20)
+  sortOrder Int       @default(0) @map("sort_order")
+
+  // Relations
+  skus      ProductSku[]
+
+  @@map("sizes")
+}
+
+model ProductSku {
+  id        BigInt    @id @default(autoincrement())
+  skuCode   String    @unique @map("sku_code") @db.VarChar(100)
+  price     Decimal   @db.Decimal(12, 2)
+  stock     Int       @default(0)
+  isActive  Boolean   @default(true) @map("is_active")
+
+  // Foreign keys
+  productId BigInt    @map("product_id")
+  colorId   BigInt    @map("color_id")
+  sizeId    BigInt    @map("size_id")
+
+  // Relations
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color     Color     @relation(fields: [colorId], references: [id])
+  size      Size      @relation(fields: [sizeId], references: [id])
+  cartItems CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([productId, colorId, sizeId])
+  @@index([productId])
+  @@map("product_skus")
+}
+
+// ============================================
+// SHOPPING GROUP
+// ============================================
+
+model Cart {
+  id        BigInt    @id @default(autoincrement())
+  userId    BigInt    @unique @map("user_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        BigInt    @id @default(autoincrement())
+  cartId    BigInt    @map("cart_id")
+  skuId     BigInt    @map("sku_id")
+  quantity  Int       @default(1)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  sku       ProductSku @relation(fields: [skuId], references: [id])
+
+  @@unique([cartId, skuId])
+  @@map("cart_items")
+}
+
+// ============================================
+// ORDER GROUP
+// ============================================
+
+model ShippingMethod {
+  id            BigInt    @id @default(autoincrement())
+  name          String    @unique @db.VarChar(100)
+  fee           Decimal   @db.Decimal(12, 2)
+  estimatedDays Int       @map("estimated_days")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  orders        Order[]
+
+  @@map("shipping_methods")
+}
+
+model Order {
+  id              BigInt      @id @default(autoincrement())
+  userId          BigInt      @map("user_id")
+  addressId       BigInt      @map("address_id")
+  shippingMethodId BigInt     @map("shipping_method_id")
+  totalAmount     Decimal     @map("total_amount") @db.Decimal(12, 2)
+  shippingFee     Decimal     @default(0) @map("shipping_fee") @db.Decimal(12, 2)
+  status          OrderStatus @default(PENDING)
+  note            String?     @db.Text
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user            User        @relation(fields: [userId], references: [id])
+  address         Address     @relation(fields: [addressId], references: [id])
+  shippingMethod  ShippingMethod @relation(fields: [shippingMethodId], references: [id])
+  items           OrderItem[]
+  payment         Payment?
+
+  @@index([userId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        BigInt    @id @default(autoincrement())
+  orderId   BigInt    @map("order_id")
+  skuId     BigInt    @map("sku_id")
+  quantity  Int
+  price     Decimal   @db.Decimal(12, 2)
+
+  // Relations
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sku       ProductSku @relation(fields: [skuId], references: [id])
+
+  @@map("order_items")
+}
+
+model Payment {
+  id            BigInt        @id @default(autoincrement())
+  orderId       BigInt        @unique @map("order_id")
+  method        PaymentMethod @default(COD)
+  provider      String?       @db.VarChar(50)
+  transactionId String?       @map("transaction_id") @db.VarChar(255)
+  amount        Decimal       @db.Decimal(12, 2)
+  status        PaymentStatus @default(PENDING)
+  paidAt        DateTime?     @map("paid_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// ============================================
+// CONTENT GROUP
+// ============================================
+
+model Review {
+  id          BigInt    @id @default(autoincrement())
+  productId   BigInt    @map("product_id")
+  userId      BigInt    @map("user_id")
+  rating      Int       @db.SmallInt
+  comment     String?   @db.Text
+  isVerified  Boolean   @default(false) @map("is_verified")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([productId, userId])
+  @@index([productId])
+  @@map("reviews")
+}
+
+// ============================================
+// AI GROUP
+// ============================================
+
+model Style {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @unique @db.VarChar(100)
+  description String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  products    ProductStyleTag[]
+
+  @@map("styles")
+}
+
+model ProductStyleTag {
+  productId BigInt  @map("product_id")
+  styleId   BigInt  @map("style_id")
+
+  // Relations
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  style     Style   @relation(fields: [styleId], references: [id], onDelete: Cascade)
+
+  @@id([productId, styleId])
+  @@map("product_style_tags")
+}
+
+model ProductEmbedding {
+  productId   BigInt   @id @map("product_id")
+  textContent String   @map("text_content") @db.Text
+  // Vector column managed via raw SQL (pgvector)
+  // embedding VECTOR(768) — Gemini text-embedding-004 outputs 768 dimensions
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_embeddings")
+}
+
+model ChatSession {
+  id        BigInt    @id @default(autoincrement())
+  userId    BigInt    @map("user_id")
+  title     String?   @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@index([userId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        BigInt    @id @default(autoincrement())
+  sessionId BigInt    @map("session_id")
+  role      ChatRole
+  message   String    @db.Text
+  metadata  Json?     // Store product recommendations, etc.
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@map("chat_messages")
 }
