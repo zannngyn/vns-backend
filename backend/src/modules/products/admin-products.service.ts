@@ -4,9 +4,14 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Gender } from '@prisma/client';
 
+import { EmbeddingService } from '../ai/embedding.service';
+
 @Injectable()
 export class AdminProductsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly embeddingService: EmbeddingService,
+  ) {}
 
   async findAll() {
     return this.prisma.product.findMany({
@@ -90,6 +95,9 @@ export class AdminProductsService {
           });
         }
       }
+
+      // Async trigger embedding generation in background so it doesn't block the request
+      this.embeddingService.embedProduct(product.id).catch(e => console.error('Auto-embed failed:', e));
 
       return product;
     });
@@ -193,10 +201,15 @@ export class AdminProductsService {
         }
       }
 
-      return tx.product.findUnique({
+      const updatedProduct = await tx.product.findUnique({
         where: { id },
         include: { skus: { where: { isActive: true }, include: { color: true, size: true } } }
       });
+
+      // Async trigger embedding generation in background
+      this.embeddingService.embedProduct(updatedProduct!.id).catch(e => console.error('Auto-embed failed:', e));
+
+      return updatedProduct;
     });
   }
 

@@ -21,3 +21,9 @@ export const jwtConfig = registerAs('jwt', () => ({
   accessExpiration: process.env.JWT_ACCESS_EXPIRATION || '15m',
   refreshExpiration: process.env.JWT_REFRESH_EXPIRATION || '7d',
 }));
+
+export const geminiConfig = registerAs('gemini', () => ({
+  apiKey: process.env.GEMINI_API_KEY || '',
+  embeddingModel: process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001',
+  chatModel: process.env.GEMINI_CHAT_MODEL || 'gemini-2.0-flash',
+}));
