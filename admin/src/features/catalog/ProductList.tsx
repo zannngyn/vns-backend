@@ -42,6 +42,18 @@ export function ProductList() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to conceal this product? It will be archived from the active catalog but not physically deleted from historical orders.")) {
+      try {
+        await api.delete(`/admin/products/${id}`);
+        fetchProducts();
+      } catch (error) {
+        console.error("Failed to conceal product", error);
+        alert("Failed to conceal product");
+      }
+    }
+  };
+
   const calculateStatus = (product: Product) => {
     if (!product.isActive) return { text: "Disabled", style: "border-zinc-500 text-zinc-600 bg-zinc-100" };
     const totalStock = product.skus.reduce((sum, sku) => sum + sku.stock, 0);
@@ -199,9 +211,20 @@ export function ProductList() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="p-2 hover:bg-zinc-200 text-zinc-400 hover:text-zinc-950 transition-colors border border-transparent hover:border-zinc-300">
-                        <MoreHorizontal size={16} />
-                      </button>
+                      <div className="flex flex-col gap-1 items-end">
+                        <button 
+                          onClick={() => navigate(`/products/${product.id}/edit`)}
+                          className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-950 hover:underline transition-colors"
+                        >
+                          [EDIT]
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(product.id)}
+                          className="text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-red-500 hover:underline transition-colors"
+                        >
+                          [CONCEAL]
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
