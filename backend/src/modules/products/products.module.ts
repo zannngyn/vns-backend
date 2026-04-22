@@ -5,6 +5,9 @@ import { AdminCategoriesController } from './admin-categories.controller';
 import { AdminBrandsController } from './admin-brands.controller';
 import { AdminProductsController } from './admin-products.controller';
 import { AdminProductsService } from './admin-products.service';
+import { AdminCategoriesService } from './admin-categories.service';
+import { AdminBrandsService } from './admin-brands.service';
+import { AdminReviewsController } from './admin-reviews.controller';
 
 @Module({
   controllers: [
@@ -12,8 +15,9 @@ import { AdminProductsService } from './admin-products.service';
     AdminCategoriesController,
     AdminBrandsController,
     AdminProductsController,
+    AdminReviewsController,
   ],
-  providers: [ProductsService, AdminProductsService],
-  exports: [ProductsService, AdminProductsService],
+  providers: [ProductsService, AdminProductsService, AdminCategoriesService, AdminBrandsService],
+  exports: [ProductsService, AdminProductsService, AdminCategoriesService, AdminBrandsService],
 })
 export class ProductsModule {}

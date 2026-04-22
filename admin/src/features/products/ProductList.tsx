@@ -33,7 +33,7 @@ export function ProductList() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/admin/products');
+      const res = await api.get("/admin/products");
       setProducts(res.data || []);
     } catch (error) {
       console.error("Failed to fetch products", error);
@@ -43,7 +43,11 @@ export function ProductList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to conceal this product? It will be archived from the active catalog but not physically deleted from historical orders.")) {
+    if (
+      confirm(
+        "Are you sure you want to conceal this product? It will be archived from the active catalog but not physically deleted from historical orders.",
+      )
+    ) {
       try {
         await api.delete(`/admin/products/${id}`);
         fetchProducts();
@@ -55,16 +59,31 @@ export function ProductList() {
   };
 
   const calculateStatus = (product: Product) => {
-    if (!product.isActive) return { text: "Disabled", style: "border-zinc-500 text-zinc-600 bg-zinc-100" };
+    if (!product.isActive)
+      return {
+        text: "Disabled",
+        style: "border-zinc-500 text-zinc-600 bg-zinc-100",
+      };
     const totalStock = product.skus.reduce((sum, sku) => sum + sku.stock, 0);
-    if (totalStock === 0) return { text: "Out of Stock", style: "border-red-500 text-red-600 bg-red-50" };
-    if (totalStock < 20) return { text: "Low Stock", style: "border-amber-500 text-amber-600 bg-amber-50" };
-    return { text: "Active", style: "border-emerald-500 text-emerald-600 bg-emerald-50" };
+    if (totalStock === 0)
+      return {
+        text: "Out of Stock",
+        style: "border-red-500 text-red-600 bg-red-50",
+      };
+    if (totalStock < 20)
+      return {
+        text: "Low Stock",
+        style: "border-amber-500 text-amber-600 bg-amber-50",
+      };
+    return {
+      text: "Active",
+      style: "border-emerald-500 text-emerald-600 bg-emerald-50",
+    };
   };
 
   const getBasePriceDisplay = (product: Product) => {
     if (!product.skus || product.skus.length === 0) return "N/A";
-    const prices = product.skus.map(s => Number(s.price));
+    const prices = product.skus.map((s) => Number(s.price));
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
     if (minPrice === maxPrice) return `₫ ${minPrice.toLocaleString()}`;
@@ -73,10 +92,12 @@ export function ProductList() {
 
   const getSalePriceDisplay = (product: Product) => {
     if (!product.skus || product.skus.length === 0) return "—";
-    const saleSkus = product.skus.filter(s => s.salePrice !== null && s.salePrice !== undefined);
+    const saleSkus = product.skus.filter(
+      (s) => s.salePrice !== null && s.salePrice !== undefined,
+    );
     if (saleSkus.length === 0) return "—";
-    
-    const prices = saleSkus.map(s => Number(s.salePrice));
+
+    const prices = saleSkus.map((s) => Number(s.salePrice));
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
     if (minPrice === maxPrice) return `₫ ${minPrice.toLocaleString()}`;
@@ -85,7 +106,6 @@ export function ProductList() {
 
   return (
     <div className="w-full flex flex-col gap-8 font-sans text-zinc-950 pb-10">
-      
       {/* Header section with signature brutalist style */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b-[3px] border-zinc-950 pb-6">
         <div>
@@ -100,8 +120,8 @@ export function ProductList() {
           <button className="flex flex-1 md:flex-none items-center justify-center gap-2 border-[3px] border-zinc-950 px-4 py-2 font-bold uppercase tracking-widest text-xs hover:-translate-y-1 transition-transform bg-white">
             <Filter size={16} /> Filters
           </button>
-          <button 
-            onClick={() => navigate('/products/new')}
+          <button
+            onClick={() => navigate("/products/new")}
             className="flex flex-1 md:flex-none items-center justify-center gap-2 border-[3px] border-zinc-950 bg-zinc-950 text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:-translate-y-1 shadow-[4px_4px_0_0_#d4d4d8] hover:shadow-[6px_6px_0_0_#d4d4d8] transition-all"
           >
             <Plus size={16} /> New Product
@@ -156,16 +176,29 @@ export function ProductList() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center font-bold tracking-widest uppercase text-zinc-400">Loading catalog...</td>
+                <td
+                  colSpan={6}
+                  className="px-6 py-10 text-center font-bold tracking-widest uppercase text-zinc-400"
+                >
+                  Loading catalog...
+                </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-10 text-center font-bold tracking-widest uppercase text-zinc-400">No products found. Create one.</td>
+                <td
+                  colSpan={6}
+                  className="px-6 py-10 text-center font-bold tracking-widest uppercase text-zinc-400"
+                >
+                  No products found. Create one.
+                </td>
               </tr>
             ) : (
               products.map((product) => {
                 const status = calculateStatus(product);
-                const totalStock = product.skus.reduce((sum, sku) => sum + sku.stock, 0);
+                const totalStock = product.skus.reduce(
+                  (sum, sku) => sum + sku.stock,
+                  0,
+                );
 
                 return (
                   <tr
@@ -174,15 +207,20 @@ export function ProductList() {
                   >
                     <td className="px-6 py-4">
                       <span className="font-mono text-xs font-bold bg-zinc-100 px-2 py-1 border border-zinc-300">
-                        P-{product.id.toString().padStart(4, '0')}
+                        P-{product.id.toString().padStart(4, "0")}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-bold text-sm tracking-tight truncate max-w-[250px]" title={product.name}>
+                      <p
+                        className="font-bold text-sm tracking-tight truncate max-w-[250px]"
+                        title={product.name}
+                      >
                         {product.name}
                       </p>
                       <p className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase mt-1">
-                        CAT: {product.category?.name || 'N/A'} • BRAND: {product.brand?.name || 'N/A'} • {product.skus.length} VARIANTS
+                        CAT: {product.category?.name || "N/A"} • BRAND:{" "}
+                        {product.brand?.name || "N/A"} • {product.skus.length}{" "}
+                        VARIANTS
                       </p>
                     </td>
                     <td className="px-6 py-4">
@@ -212,13 +250,15 @@ export function ProductList() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex flex-col gap-1 items-end">
-                        <button 
-                          onClick={() => navigate(`/products/${product.id}/edit`)}
+                        <button
+                          onClick={() =>
+                            navigate(`/products/${product.id}/edit`)
+                          }
                           className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-950 hover:underline transition-colors"
                         >
                           [EDIT]
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(product.id)}
                           className="text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-red-500 hover:underline transition-colors"
                         >

@@ -12,10 +12,14 @@ type User = {
     phone?: string;
     gender?: string;
   };
+  isActive: boolean;
   orders: {
     totalAmount: string;
     status: string;
   }[];
+  _count?: {
+    orders: number;
+  };
 };
 
 export function UserList() {
@@ -39,11 +43,32 @@ export function UserList() {
   };
 
   // Helper calculation
-  const getFinancialInsight = (orders: User['orders']) => {
-    if (!orders || orders.length === 0) return { total: 0, count: 0 };
-    const successfulOrders = orders.filter(o => o.status !== 'CANCELLED');
-    const total = successfulOrders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
-    return { total, count: successfulOrders.length };
+  const getFinancialInsight = (user: User) => {
+    let count = user._count?.orders || 0;
+    return { count };
+  };
+
+  const toggleStatus = async (id: string, currentStatus: boolean) => {
+    if (confirm(`Are you sure you want to ${currentStatus ? 'BAN' : 'UNBAN'} this user?`)) {
+      try {
+        await api.patch(`/admin/users/${id}/status`, { isActive: !currentStatus });
+        fetchUsers();
+      } catch (err: any) {
+        alert(err.response?.data?.message || "Action failed");
+      }
+    }
+  };
+
+  const toggleRole = async (id: string, currentRole: string) => {
+    const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
+    if (confirm(`Approve promotion/demotion to ${newRole}?`)) {
+      try {
+        await api.patch(`/admin/users/${id}/role`, { role: newRole });
+        fetchUsers();
+      } catch (err: any) {
+        alert(err.response?.data?.message || "Action failed");
+      }
+    }
   };
 
   return (
@@ -99,10 +124,13 @@ export function UserList() {
                 Contact Data
               </th>
               <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                Total Lifetime Value (LTV)
+                LTV & Orders
               </th>
               <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-500">
                 Role & Level
+              </th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">
+                Actions
               </th>
             </tr>
           </thead>
@@ -117,7 +145,7 @@ export function UserList() {
               </tr>
             ) : (
               users.map((user) => {
-                const insight = getFinancialInsight(user.orders);
+                const insight = getFinancialInsight(user);
                 
                 return (
                   <tr
@@ -147,20 +175,40 @@ export function UserList() {
                     </td>
                     <td className="px-6 py-4 bg-zinc-50">
                       <p className="font-mono font-black text-sm tracking-tight text-zinc-950">
-                        <span className="text-zinc-400 text-xs mr-1">₫</span>
-                        {insight.total.toLocaleString()}
+                        {insight.count}
                       </p>
                       <p className="text-[9px] font-bold tracking-widest uppercase mt-1 text-zinc-500">
-                        OVER {insight.count} SUCCESSFUL ORDERS
+                        TOTAL ORDERS
                       </p>
                     </td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 text-[10px] font-black tracking-widest uppercase px-3 py-1.5 border-[2px] ${user.role === 'ADMIN' ? 'border-zinc-950 bg-zinc-950 text-white' : 'border-zinc-300 bg-white text-zinc-600'}`}
-                      >
-                        {user.role === 'ADMIN' ? <Shield size={10} /> : <UserIcon size={10} />}
-                        {user.role}
-                      </span>
+                      <div className="flex flex-col gap-2 items-start">
+                        <span
+                          className={`inline-flex items-center gap-1.5 text-[10px] font-black tracking-widest uppercase px-3 py-1.5 border-[2px] ${user.role === 'ADMIN' ? 'border-zinc-950 bg-zinc-950 text-white' : 'border-zinc-300 bg-white text-zinc-600'}`}
+                        >
+                          {user.role === 'ADMIN' ? <Shield size={10} /> : <UserIcon size={10} />}
+                          {user.role}
+                        </span>
+                        {!user.isActive && (
+                          <span className="text-[9px] font-black uppercase tracking-widest text-red-500 border border-red-500 px-1">BANNED</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex flex-col gap-1 items-end">
+                        <button 
+                          onClick={() => toggleRole(user.id, user.role)}
+                          className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-blue-600 hover:underline transition-colors"
+                        >
+                          [TOGGLE ROLE]
+                        </button>
+                        <button 
+                          onClick={() => toggleStatus(user.id, user.isActive)}
+                          className={`text-[10px] font-black uppercase tracking-widest transition-colors hover:underline ${user.isActive ? 'text-zinc-300 hover:text-red-600' : 'text-red-500 hover:text-emerald-500'}`}
+                        >
+                          [{user.isActive ? 'BAN USER' : 'UNBAN USER'}]
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
