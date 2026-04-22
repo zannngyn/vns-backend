@@ -33,6 +33,7 @@ enum OrderStatus {
   SHIPPING
   DELIVERED
   CANCELLED
+  RETURNED
 }
 
 enum PaymentStatus {
@@ -47,6 +48,7 @@ enum PaymentMethod {
   VNPAY
   MOMO
   BANK_TRANSFER
+  SEPAY
 }
 
 enum ChatRole {
@@ -183,6 +185,7 @@ model Product {
   material    String?   @db.VarChar(100)
   gender      Gender    @default(UNISEX)
   thumbnail   String?
+  images      String[]  @default([])
   isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -419,7 +422,7 @@ model ProductEmbedding {
   productId   BigInt   @id @map("product_id")
   textContent String   @map("text_content") @db.Text
   // Vector column managed via raw SQL (pgvector)
-  // embedding VECTOR(768) — Gemini text-embedding-004 outputs 768 dimensions
+  embedding   Unsupported("vector(768)")?
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations

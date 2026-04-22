@@ -12,10 +12,15 @@ export class RegisterDto {
   @MinLength(6)
   password: string;
 
-  @ApiPropertyOptional({ example: 'Nguyen Van A', description: 'User full name' })
+  @ApiPropertyOptional({ example: 'Nguyen', description: 'User first name/given name' })
   @IsString()
   @IsOptional()
-  fullName?: string;
+  firstName?: string;
+
+  @ApiPropertyOptional({ example: 'Van A', description: 'User last name/family name' })
+  @IsString()
+  @IsOptional()
+  lastName?: string;
 
   @ApiPropertyOptional({ example: '0901234567', description: 'User phone number' })
   @IsString()

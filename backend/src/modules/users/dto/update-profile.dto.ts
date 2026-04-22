@@ -4,6 +4,18 @@ import { IsDate, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator
 import { Gender } from '@prisma/client';
 
 export class UpdateProfileDto {
+  @ApiPropertyOptional({ description: 'First name', example: 'Nguyen' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  firstName?: string;
+
+  @ApiPropertyOptional({ description: 'Last name', example: 'Van A' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  lastName?: string;
+
   @ApiPropertyOptional({ description: 'Full name', example: 'Nguyen Van A' })
   @IsString()
   @IsOptional()

@@ -149,35 +149,327 @@ async function main() {
   // ── Products + SKUs ──────────────────────────────
   const productsData = [
     {
-      name: 'Áo thun oversize basic', slug: 'ao-thun-oversize-basic', description: 'Áo thun form rộng, chất cotton 100%.', material: 'Cotton 100%', gender: 'UNISEX' as Gender, categorySlug: 'ao-thun', brandSlug: 'viestyle', styles: ['Minimal', 'Streetwear'], basePrice: 250000, colorNames: ['Đen', 'Trắng', 'Xám'],
+      name: 'Áo thun oversize basic', 
+      slug: 'ao-thun-oversize-basic', 
+      description: 'Áo thun form rộng, chất cotton 100%, thoáng mát và bền bỉ. Phù hợp cho mọi hoạt động hàng ngày.', 
+      material: 'Cotton 100%', 
+      gender: 'UNISEX' as Gender, 
+      categorySlug: 'ao-thun', 
+      brandSlug: 'viestyle', 
+      styles: ['Minimal', 'Streetwear'], 
+      basePrice: 250000, 
+      colorNames: ['Đen', 'Trắng', 'Xám'],
+      thumbnail: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1571945153237-4929e783ee4a?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Áo thun cổ tròn regular fit', slug: 'ao-thun-co-tron-regular', description: 'Áo thun cổ tròn dáng vừa vặn.', material: 'Cotton pha', gender: 'UNISEX' as Gender, categorySlug: 'ao-thun', brandSlug: 'urban-basics', styles: ['Minimal', 'Smart Casual'], basePrice: 199000, colorNames: ['Đen', 'Trắng', 'Navy'],
+      name: 'Áo thun cổ tròn regular fit', 
+      slug: 'ao-thun-co-tron-regular', 
+      description: 'Áo thun cổ tròn dáng vừa vặn, tôn dáng người mặc. Phù hợp cho phong cách tối giản.', 
+      material: 'Cotton pha', 
+      gender: 'UNISEX' as Gender, 
+      categorySlug: 'ao-thun', 
+      brandSlug: 'urban-basics', 
+      styles: ['Minimal', 'Smart Casual'], 
+      basePrice: 199000, 
+      colorNames: ['Đen', 'Trắng', 'Navy'],
+      thumbnail: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Áo sơ mi dài tay Oxford', slug: 'ao-so-mi-dai-tay-oxford', description: 'Áo sơ mi Oxford đi làm.', material: 'Oxford Cotton', gender: 'MALE' as Gender, categorySlug: 'ao-so-mi', brandSlug: 'viestyle', styles: ['Smart Casual', 'Office'], basePrice: 450000, colorNames: ['Trắng', 'Xám', 'Navy'],
+      name: 'Áo sơ mi dài tay Oxford', 
+      slug: 'ao-so-mi-dai-tay-oxford', 
+      description: 'Áo sơ mi Oxford chất liệu cao cấp, ít nhăn, dễ ủi. Sự lựa chọn hoàn hảo cho dân văn phòng.', 
+      material: 'Oxford Cotton', 
+      gender: 'MALE' as Gender, 
+      categorySlug: 'ao-so-mi', 
+      brandSlug: 'viestyle', 
+      styles: ['Smart Casual', 'Office'], 
+      basePrice: 450000, 
+      colorNames: ['Trắng', 'Xám', 'Navy'],
+      thumbnail: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1598033129183-c4f50c717658?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Áo sơ mi linen ngắn tay', slug: 'ao-so-mi-linen-ngan-tay', description: 'Áo sơ mi linen mùa hè.', material: 'Linen', gender: 'UNISEX' as Gender, categorySlug: 'ao-so-mi', brandSlug: 'local-brand-x', styles: ['Minimal', 'Vintage'], basePrice: 380000, colorNames: ['Trắng', 'Be', 'Xanh rêu'],
+      name: 'Áo sơ mi linen ngắn tay', 
+      slug: 'ao-so-mi-linen-ngan-tay', 
+      description: 'Chất liệu linen tự nhiên, thấm hút mồ hôi tốt. Mang lại cảm giác thoải mái trong những ngày hè.', 
+      material: 'Linen', 
+      gender: 'UNISEX' as Gender, 
+      categorySlug: 'ao-so-mi', 
+      brandSlug: 'local-brand-x', 
+      styles: ['Minimal', 'Vintage'], 
+      basePrice: 380000, 
+      colorNames: ['Trắng', 'Be', 'Xanh rêu'],
+      thumbnail: 'https://images.unsplash.com/photo-1598033129183-c4f50c717658?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1598033129183-c4f50c717658?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1626497748470-2819bc264e1c?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Áo khoác bomber local', slug: 'ao-khoac-bomber-local', description: 'Áo khoác bomber 2 lớp.', material: 'Polyester', gender: 'UNISEX' as Gender, categorySlug: 'ao-khoac', brandSlug: 'local-brand-x', styles: ['Streetwear'], basePrice: 650000, colorNames: ['Đen', 'Xanh rêu', 'Nâu'],
+      name: 'Áo khoác bomber local', 
+      slug: 'ao-khoac-bomber-local', 
+      description: 'Áo khoác bomber 2 lớp, thiết kế hiện đại, phối được với nhiều loại trang phục khác nhau.', 
+      material: 'Polyester', 
+      gender: 'UNISEX' as Gender, 
+      categorySlug: 'ao-khoac', 
+      brandSlug: 'local-brand-x', 
+      styles: ['Streetwear'], 
+      basePrice: 650000, 
+      colorNames: ['Đen', 'Xanh rêu', 'Nâu'],
+      thumbnail: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Áo khoác hoodie zip', slug: 'ao-khoac-hoodie-zip', description: 'Áo hoodie khóa kéo.', material: 'Nỉ bông', gender: 'UNISEX' as Gender, categorySlug: 'ao-khoac', brandSlug: 'viestyle', styles: ['Streetwear', 'Sporty'], basePrice: 550000, colorNames: ['Đen', 'Xám', 'Navy'],
+      name: 'Áo khoác hoodie zip', 
+      slug: 'ao-khoac-hoodie-zip', 
+      description: 'Áo hoodie khóa kéo, chất nỉ bông dày dặn, giữ ấm tốt. Form áo hiện đại.', 
+      material: 'Nỉ bông', 
+      gender: 'UNISEX' as Gender, 
+      categorySlug: 'ao-khoac', 
+      brandSlug: 'viestyle', 
+      styles: ['Streetwear', 'Sporty'], 
+      basePrice: 550000, 
+      colorNames: ['Đen', 'Xám', 'Navy'],
+      thumbnail: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Quần dài kaki slim fit', slug: 'quan-dai-kaki-slim', description: 'Quần kaki mềm đi làm.', material: 'Kaki', gender: 'MALE' as Gender, categorySlug: 'quan-dai', brandSlug: 'urban-basics', styles: ['Smart Casual', 'Office'], basePrice: 420000, colorNames: ['Đen', 'Be', 'Nâu'],
+      name: 'Quần dài kaki slim fit', 
+      slug: 'quan-dai-kaki-slim', 
+      description: 'Quần kaki dáng slim fit ôm vừa phải, chất vải co giãn nhẹ. Thoải mái vận động suốt ngày dài.', 
+      material: 'Kaki', 
+      gender: 'MALE' as Gender, 
+      categorySlug: 'quan-dai', 
+      brandSlug: 'urban-basics', 
+      styles: ['Smart Casual', 'Office'], 
+      basePrice: 420000, 
+      colorNames: ['Đen', 'Be', 'Nâu'],
+      thumbnail: 'https://images.unsplash.com/photo-1473966968600-fa804b86940a?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1473966968600-fa804b86940a?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Quần jogger thể thao', slug: 'quan-dai-jogger-the-thao', description: 'Quần jogger nỉ da cá.', material: 'Nỉ', gender: 'UNISEX' as Gender, categorySlug: 'quan-dai', brandSlug: 'viestyle', styles: ['Sporty', 'Streetwear'], basePrice: 350000, colorNames: ['Đen', 'Xám'],
+      name: 'Quần jogger thể thao', 
+      slug: 'quan-dai-jogger-the-thao', 
+      description: 'Quần jogger chất nỉ da cá, phù hợp cho việc tập luyện hoặc mặc ở nhà.', 
+      material: 'Nỉ', 
+      gender: 'UNISEX' as Gender, 
+      categorySlug: 'quan-dai', 
+      brandSlug: 'viestyle', 
+      styles: ['Sporty', 'Streetwear'], 
+      basePrice: 350000, 
+      colorNames: ['Đen', 'Xám'],
+      thumbnail: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Quần short đũi nam', slug: 'quan-short-dui-nam', description: 'Quần short thoáng mát.', material: 'Đũi', gender: 'MALE' as Gender, categorySlug: 'quan-short', brandSlug: 'local-brand-x', styles: ['Minimal', 'Loungewear'], basePrice: 280000, colorNames: ['Be', 'Trắng', 'Xanh rêu'],
+      name: 'Váy dạo phố hoa nhí',
+      slug: 'vay-dao-pho-hoa-nhi',
+      description: 'Váy hoa nhí phong cách trẻ trung, nữ tính. Chất liệu voan mềm mại.',
+      material: 'Voan',
+      gender: 'FEMALE' as Gender,
+      categorySlug: 'vay-dam',
+      brandSlug: 'zara',
+      styles: ['Minimal', 'Vintage'],
+      basePrice: 490000,
+      colorNames: ['Trắng', 'Đỏ', 'Vàng'],
+      thumbnail: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
     {
-      name: 'Quần short thể thao nữ', slug: 'quan-short-the-thao-nu', description: 'Quần short lót trong.', material: 'Dry-fit', gender: 'FEMALE' as Gender, categorySlug: 'quan-short', brandSlug: 'adidas', styles: ['Sporty'], basePrice: 220000, colorNames: ['Đen', 'Xám', 'Navy'],
+      name: 'Giày Sneaker Streetwear',
+      slug: 'giay-sneaker-streetwear',
+      description: 'Giày sneaker phong cách đường phố, êm chân, bền bỉ.',
+      material: 'Da / Cao su',
+      gender: 'UNISEX' as Gender,
+      categorySlug: 'giay-dep',
+      brandSlug: 'nike',
+      styles: ['Streetwear', 'Sporty'],
+      basePrice: 1200000,
+      colorNames: ['Trắng', 'Đen', 'Navy'],
+      thumbnail: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=1000&auto=format&fit=crop'
+      ]
     },
+    {
+      name: 'Túi xách Tote Canvas',
+      slug: 'tui-xach-tote-canvas',
+      description: 'Túi Tote chất liệu canvas dày dặn, in hình nghệ thuật.',
+      material: 'Canvas',
+      gender: 'FEMALE' as Gender,
+      categorySlug: 'phu-kien',
+      brandSlug: 'local-brand-x',
+      styles: ['Minimal', 'Vintage'],
+      basePrice: 150000,
+      colorNames: ['Be', 'Đen'],
+      thumbnail: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1594235412402-b5cae4817a9a?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Mũ lưỡi trai Basic',
+      slug: 'mu-luoi-trai-basic',
+      description: 'Mũ lưỡi trai thêu logo đơn giản, form chuẩn.',
+      material: 'Kaki cotton',
+      gender: 'UNISEX' as Gender,
+      categorySlug: 'phu-kien',
+      brandSlug: 'viestyle',
+      styles: ['Minimal', 'Streetwear'],
+      basePrice: 120000,
+      colorNames: ['Đen', 'Trắng', 'Navy', 'Xanh rêu'],
+      thumbnail: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Áo thun Polo cá sấu',
+      slug: 'ao-thun-polo-ca-sau',
+      description: 'Áo thun Polo chất vải cá sấu co giãn 4 chiều, giữ form tốt.',
+      material: 'Pique Cotton',
+      gender: 'MALE' as Gender,
+      categorySlug: 'ao-thun',
+      brandSlug: 'urban-basics',
+      styles: ['Smart Casual', 'Office'],
+      basePrice: 320000,
+      colorNames: ['Trắng', 'Đen', 'Navy', 'Xám'],
+      thumbnail: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Quần Jeans Straight Fit',
+      slug: 'quan-jeans-straight-fit',
+      description: 'Quần Jeans dáng đứng cổ điển, bền màu.',
+      material: 'Denim',
+      gender: 'MALE' as Gender,
+      categorySlug: 'quan-dai',
+      brandSlug: 'levis',
+      styles: ['Streetwear', 'Vintage'],
+      basePrice: 850000,
+      colorNames: ['Navy', 'Đen'],
+      thumbnail: 'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1582552938357-32b906df40cb?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Chân váy Tennis ngắn',
+      slug: 'chan-vay-tennis-ngan',
+      description: 'Chân váy xếp ly phong cách thể thao nữ tính.',
+      material: 'Polyester pha',
+      gender: 'FEMALE' as Gender,
+      categorySlug: 'vay-dam',
+      brandSlug: 'local-brand-x',
+      styles: ['Sporty', 'Y2K'],
+      basePrice: 280000,
+      colorNames: ['Trắng', 'Đen'],
+      thumbnail: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1627576561502-30fb15e57620?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Áo khoác gió dù',
+      slug: 'ao-khoac-gio-du',
+      description: 'Áo khoác gió mỏng nhẹ, chống tia UV.',
+      material: 'Nylon',
+      gender: 'UNISEX' as Gender,
+      categorySlug: 'ao-khoac',
+      brandSlug: 'uniqlo',
+      styles: ['Minimal', 'Sporty'],
+      basePrice: 390000,
+      colorNames: ['Xám', 'Navy', 'Xanh rêu'],
+      thumbnail: 'https://images.unsplash.com/photo-1620403775050-6a9718fc8067?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1620403775050-6a9718fc8067?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Bộ đồ mặc nhà lụa',
+      slug: 'bo-do-mac-nha-lua',
+      description: 'Bộ đồ pijama lụa mềm mại, sang trọng.',
+      material: 'Lụa Satin',
+      gender: 'FEMALE' as Gender,
+      categorySlug: 'do-bo',
+      brandSlug: 'zara',
+      styles: ['Loungewear'],
+      basePrice: 450000,
+      colorNames: ['Be', 'Trắng', 'Đỏ'],
+      thumbnail: 'https://images.unsplash.com/photo-1590608897129-79da98d15969?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1590608897129-79da98d15969?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Giày chạy bộ Performance',
+      slug: 'giay-chay-bo-performance',
+      description: 'Giày chuyên dụng cho chạy bộ, công nghệ đệm khí.',
+      material: 'Mesh / Poly',
+      gender: 'UNISEX' as Gender,
+      categorySlug: 'giay-dep',
+      brandSlug: 'adidas',
+      styles: ['Sporty'],
+      basePrice: 1800000,
+      colorNames: ['Đen', 'Xám', 'Trắng'],
+      thumbnail: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1552346154-21d328109a27?q=80&w=1000&auto=format&fit=crop'
+      ]
+    },
+    {
+      name: 'Thắt lưng da bò thật',
+      slug: 'that-lung-da-bo-that',
+      description: 'Thắt lưng da bò nguyên tấm, khóa kim loại không gỉ.',
+      material: 'Da bò',
+      gender: 'MALE' as Gender,
+      categorySlug: 'phu-kien',
+      brandSlug: 'levis',
+      styles: ['Office', 'Minimal'],
+      basePrice: 350000,
+      colorNames: ['Đen', 'Nâu'],
+      thumbnail: 'https://images.unsplash.com/photo-1624222247344-550fbadec94f?q=80&w=1000&auto=format&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1624222247344-550fbadec94f?q=80&w=1000&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1624388301533-333e660fd63a?q=80&w=1000&auto=format&fit=crop'
+      ]
+    }
   ];
 
   const sizeNames = ['S', 'M', 'L'];
@@ -188,13 +480,19 @@ async function main() {
 
     const product = await prisma.product.upsert({
       where: { slug: pData.slug },
-      update: {},
+      update: {
+        name: pData.name,
+        thumbnail: pData.thumbnail,
+        images: pData.images || [],
+      },
       create: {
         name: pData.name,
         slug: pData.slug,
         description: pData.description,
         material: pData.material,
         gender: pData.gender,
+        thumbnail: pData.thumbnail,
+        images: pData.images || [],
         categoryId: category.id,
         brandId: brand.id,
       },

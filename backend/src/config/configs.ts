@@ -27,3 +27,12 @@ export const geminiConfig = registerAs('gemini', () => ({
   embeddingModel: process.env.GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001',
   chatModel: process.env.GEMINI_CHAT_MODEL || 'gemini-2.0-flash',
 }));
+
+export const sepayConfig = registerAs('sepay', () => ({
+  env: (process.env.SEPAY_ENV || 'sandbox') as 'sandbox' | 'production',
+  merchantId: process.env.SEPAY_MERCHANT_ID || '',
+  secretKey: process.env.SEPAY_SECRET_KEY || '',
+  successUrl: process.env.SEPAY_SUCCESS_URL || 'http://localhost:5173/order-success',
+  cancelUrl: process.env.SEPAY_CANCEL_URL || 'http://localhost:5173/checkout',
+  errorUrl: process.env.SEPAY_ERROR_URL || 'http://localhost:5173/checkout?error=payment_failed',
+}));
