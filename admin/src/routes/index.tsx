@@ -35,6 +35,7 @@ export function AppRoutes() {
           <Route index element={<DashboardOverview />} />
           <Route path="products" element={<ProductList />} />
           <Route path="products/new" element={<ProductForm />} />
+          <Route path="products/:id/edit" element={<ProductForm />} />
           <Route path="orders" element={<OrderList />} />
           <Route path="users" element={<UserList />} />
         </Route>
