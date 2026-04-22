@@ -1,8 +1,7 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { useUIStore } from "@/stores/useUIStore";
-import { Menu, LogOut, Package, ShoppingCart, Users, Home } from "lucide-react";
+import { Menu, LogOut, Package, ShoppingCart, Users, Home, Tag, BookMarked as Trademark, PackageSearch, MessageSquare, Ticket } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
 
 function Sidebar() {
   const { isSidebarOpen } = useUIStore();
@@ -11,7 +10,11 @@ function Sidebar() {
   const navItems = [
     { name: "Dashboard", href: "/", icon: Home },
     { name: "Orders", href: "/orders", icon: ShoppingCart },
-    { name: "Products", href: "/products", icon: Package },
+    { name: "Products", href: "/products", icon: PackageSearch },
+    { name: "Categories", href: "/categories", icon: Tag },
+    { name: "Brands", href: "/brands", icon: Trademark },
+    { name: "Reviews", href: "/reviews", icon: MessageSquare },
+    { name: "Coupons", href: "/coupons", icon: Ticket },
     { name: "Users", href: "/users", icon: Users },
   ];
 
