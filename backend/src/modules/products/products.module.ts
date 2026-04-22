@@ -9,7 +9,10 @@ import { AdminCategoriesService } from './admin-categories.service';
 import { AdminBrandsService } from './admin-brands.service';
 import { AdminReviewsController } from './admin-reviews.controller';
 
+import { AiModule } from '../ai/ai.module';
+
 @Module({
+  imports: [AiModule],
   controllers: [
     ProductsController,
     AdminCategoriesController,
