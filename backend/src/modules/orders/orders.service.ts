@@ -65,7 +65,7 @@ export class OrdersService {
           },
           payment: {
             create: {
-              method: PaymentMethod.COD,
+              method: dto.paymentMethod || PaymentMethod.COD,
               amount: totalAmount,
             }
           }
@@ -137,8 +137,28 @@ export class OrdersService {
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-    
-    if (dto.status === OrderStatus.CANCELLED && order.status !== OrderStatus.CANCELLED) {
+
+    // Terminal state protection
+    if (order.status === OrderStatus.CANCELLED || order.status === OrderStatus.RETURNED) {
+      throw new BadRequestException(`Đơn hàng đã chốt ở trạng thái ${order.status} và không thể thay đổi.`);
+    }
+
+    // Attempting to cancel
+    if (dto.status === OrderStatus.CANCELLED) {
+      if (order.status === OrderStatus.SHIPPING || order.status === OrderStatus.DELIVERED) {
+        throw new BadRequestException(`Không thể đặt trạng thái CANCELLED cho đơn hàng đang ${order.status}. Vui lòng chuyển sang RETURNED (Hoàn hàng) để đảm bảo dòng chảy kho.`);
+      }
+    }
+
+    // Attempting to return
+    if (dto.status === OrderStatus.RETURNED) {
+      if (order.status === OrderStatus.PENDING || order.status === OrderStatus.CONFIRMED) {
+        throw new BadRequestException(`Không thể đặt RETURNED (Hoàn hàng) cho đơn chưa đi. Vui lòng dùng tiêu chuẩn CANCELLED.`);
+      }
+    }
+
+    // Proceeding to Handle Stock Restorations for CANCELLED or RETURNED
+    if (dto.status === OrderStatus.CANCELLED || dto.status === OrderStatus.RETURNED) {
       await this.prisma.$transaction(async (tx) => {
         const orderItems = await tx.orderItem.findMany({ where: { orderId } });
         for (const item of orderItems) {
@@ -153,6 +173,14 @@ export class OrdersService {
         });
       });
       return this.prisma.order.findUnique({ where: { id: orderId } });
+    }
+
+    // Normal state forwards
+    const statusOrder = [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.SHIPPING, OrderStatus.DELIVERED];
+    if (statusOrder.includes(order.status) && statusOrder.includes(dto.status)) {
+        if (statusOrder.indexOf(dto.status) < statusOrder.indexOf(order.status)) {
+            throw new BadRequestException(`Nghiêm cấm lùi trạng thái đơn hàng (từ ${order.status} về ${dto.status}). Luồng đơn hàng chỉ được phép tiến lên.`);
+        }
     }
 
     return this.prisma.order.update({
