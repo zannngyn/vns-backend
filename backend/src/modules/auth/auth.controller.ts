@@ -1,6 +1,7 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UnauthorizedException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
@@ -9,7 +10,10 @@ import { Public } from './decorators/public.decorator';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Public()
   @Post('register')
@@ -51,10 +55,21 @@ export class AuthController {
 
   @ApiBearerAuth()
   @Get('me')
-  @ApiOperation({ summary: 'Get current user profile extracted from JWT' })
+  @ApiOperation({ summary: 'Get current user profile extracted from DB' })
   @ApiResponse({ status: 200, description: 'Returns user info.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   async getProfile(@Request() req: any) {
-    return req.user;
+    const user = await this.usersService.findById(BigInt(req.user.sub));
+    if (!user) throw new UnauthorizedException();
+    
+    return {
+      ...user,
+      id: user.id.toString(),
+      profile: user.profile ? {
+        ...user.profile,
+        id: user.profile.id.toString(),
+        userId: user.profile.userId.toString(),
+      } : undefined
+    };
   }
 }

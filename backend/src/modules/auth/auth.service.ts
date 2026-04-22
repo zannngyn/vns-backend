@@ -28,10 +28,15 @@ export class AuthService {
 
     const user = await this.usersService.create(
       { email: dto.email, passwordHash: hashedPassword },
-      { fullName: dto.fullName, phone: dto.phone },
+      { 
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        fullName: [dto.firstName, dto.lastName].filter(Boolean).join(" "),
+        phone: dto.phone 
+      },
     );
 
-    return this.generateTokens(user.id.toString(), user.role);
+    return this.generateTokens(user);
   }
 
   async login(dto: LoginDto) {
@@ -45,7 +50,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.generateTokens(user.id.toString(), user.role);
+    return this.generateTokens(user);
   }
 
   async refresh(refreshToken: string) {
@@ -62,15 +67,15 @@ export class AuthService {
     // Invalidate old refresh token (rotation)
     await this.redisService.del(`refresh_token:${refreshToken}`);
 
-    return this.generateTokens(user.id.toString(), user.role);
+    return this.generateTokens(user);
   }
 
   async logout(refreshToken: string) {
     await this.redisService.del(`refresh_token:${refreshToken}`);
   }
 
-  private async generateTokens(userId: string, role: string) {
-    const payload = { sub: userId, role };
+  private async generateTokens(user: any) {
+    const payload = { sub: user.id.toString(), role: user.role };
     
     // We could use jwtConfig directly but since we are in a service, using configService is better.
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -85,11 +90,23 @@ export class AuthService {
       expireSecs = parseInt(expiresInStr) * 24 * 60 * 60;
     }
 
-    await this.redisService.set(`refresh_token:${refreshToken}`, userId, expireSecs);
+    await this.redisService.set(`refresh_token:${refreshToken}`, user.id.toString(), expireSecs);
+
+    // Convert bigints to string for JSON serialization
+    const serializedUser = {
+      ...user,
+      id: user.id.toString(),
+      profile: user.profile ? {
+        ...user.profile,
+        id: user.profile.id.toString(),
+        userId: user.profile.userId.toString(),
+      } : undefined
+    };
 
     return {
       accessToken,
       refreshToken,
+      user: serializedUser,
     };
   }
 }
